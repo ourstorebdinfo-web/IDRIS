@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@keyframes marqueeScroll {
+    0% {
+        transform: translate3d(0%, 0, 0);
+    }
+    100% {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@keyframes scroll {
+  0% { transform: translate3d(0%, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.animate-scroll > * {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Custom optimization for dynamic Tailwind marquee animation */
+[class*='animate-[marqueeScroll_'] {
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+[class*='animate-[marqueeScroll_'] > * {
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+/* Card hover zoom - only on hover-capable devices */
+.card-image-zoom {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .card-image-zoom {
+        will-change: transform;
+    }
+    .group:hover .card-image-zoom {
+        transform: scale(1.05);
+    }
+}
+
+/* Testimonial card hover transition - only on hover-capable devices */
+.testimonial-card {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .testimonial-card {
+        will-change: transform;
+    }
+    .testimonial-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+}
+
+/* Active touch feedback animations - only on hover-capable devices */
+.active-scale-90 {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .active-scale-90:active {
+        transform: scale(0.9);
+    }
+}
+
+.active-scale-95 {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .active-scale-95:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Category Card optimizations */
+.category-card {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .category-card {
+        will-change: transform;
+    }
+    .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+}
+
+.category-card-zoom {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@media (hover: hover) {
+    .category-card-zoom {
+        will-change: transform;
+    }
+    .group:hover .category-card-zoom {
+        transform: scale(1.05);
+    }
+}
+
+/* Force rounded corners clipping on WebKit / Safari and prevent flickers */
+.force-clip {
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Global hover & active scaling prevention for touch-based devices */
+@media (hover: none) {
+    [class*='active:scale-'],
+    [class*='hover:scale-'],
+    [class*='group-hover:scale-'],
+    [class*='hover:-translate-'],
+    .group-hover\:scale-105,
+    .group-hover\:scale-110,
+    .hover\:scale-103,
+    .hover\:scale-105,
+    .hover\:scale-110,
+    .group:hover *,
+    .card-image-zoom,
+    .testimonial-card,
+    .category-card,
+    .category-card-zoom,
+    .active-scale-90,
+    .active-scale-95 {
+        transform: none !important;
+        scale: none !important;
+        transition: none !important;
+        will-change: auto !important;
+    }
+}
+
+/* Native-feeling touch highlights */
+button, a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@layer base {
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    button {
+        cursor: pointer;
+    }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -8px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+    will-change: transform;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-150%) skewX(-20deg);
+    }
+    100% {
+        transform: translateX(250%) skewX(-20deg);
+    }
+}
+
+@keyframes zap-wiggle {
+    0%, 75%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    80% {
+        transform: rotate(-15deg) scale(1.15);
+    }
+    85% {
+        transform: rotate(12deg) scale(1.15);
+    }
+    90% {
+        transform: rotate(-10deg) scale(1.15);
+    }
+    95% {
+        transform: rotate(8deg) scale(1.15);
+    }
+}
+
+.shimmer-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.35) 30%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 255, 255, 0.35) 70%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 3s infinite ease-in-out;
+    pointer-events: none;
+}
+
+.shimmer-btn svg {
+    animation: zap-wiggle 3s infinite ease-in-out;
+    will-change: transform;
+}
