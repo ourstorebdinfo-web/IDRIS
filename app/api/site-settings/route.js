@@ -95,22 +95,28 @@ const defaultSettings = {
   whatsappNumber: '',
 }
 
-// Read heroBanner via raw SQL (bypasses Prisma client type system)
+// Read heroBanner via standard Prisma Client
 async function getHeroBannerRaw() {
   try {
-    const rows = await prisma.$queryRawUnsafe(`SELECT heroBanner FROM SiteSetting WHERE id = 'site'`)
-    return rows?.[0]?.heroBanner || ''
+    const row = await prisma.siteSetting.findUnique({
+      where: { id: 'site' },
+      select: { heroBanner: true }
+    })
+    return row?.heroBanner || ''
   } catch {
     return ''
   }
 }
 
-// Save heroBanner via raw SQL (bypasses Prisma client type system)
+// Save heroBanner via standard Prisma Client
 async function setHeroBannerRaw(value) {
   try {
-    await prisma.$executeRawUnsafe(`UPDATE SiteSetting SET heroBanner = ? WHERE id = 'site'`, value)
+    await prisma.siteSetting.update({
+      where: { id: 'site' },
+      data: { heroBanner: value }
+    })
   } catch (err) {
-    console.error('Failed to save heroBanner via raw SQL', err)
+    console.error('Failed to save heroBanner:', err)
   }
 }
 
