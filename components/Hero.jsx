@@ -79,8 +79,12 @@ const Hero = () => {
                     {mainImg && <Image className='absolute bottom-0 right-4 sm:right-0 md:right-10 w-[45%] max-w-[180px] sm:w-full sm:max-w-sm pointer-events-none' src={mainImg} alt="" {...mainImgProps} />}
                 </div>
                 <div className='flex flex-row xl:flex-col gap-3 sm:gap-5 w-full xl:max-w-sm text-sm text-slate-600'>
-                    <Link
-                        href={topRightBanner.link || '/'}
+                {(() => {
+                    const topLink = topRightBanner.link || '/'
+                    const Tag = topLink.includes('#') ? 'a' : Link
+                    return (
+                    <Tag
+                        href={topLink}
                         style={topRightBanner.bgColor ? { backgroundColor: topRightBanner.bgColor } : {}}
                         className={`flex-1 flex items-center justify-between w-full rounded-3xl p-3 sm:p-6 sm:px-8 overflow-hidden group ${!topRightBanner.bgColor ? 'bg-orange-200' : ''}`}
                     >
@@ -94,9 +98,15 @@ const Hero = () => {
                             </p>
                         </div>
                         {topProductImg && <Image className='w-14 sm:w-35' src={topProductImg} alt="" {...topProductImgProps} />}
-                    </Link>
-                    <Link
-                        href={bottomRightBanner.link || '/'}
+                    </Tag>
+                    )
+                })()}
+                {(() => {
+                    const bottomLink = bottomRightBanner.link || '/'
+                    const Tag = bottomLink.includes('#') ? 'a' : Link
+                    return (
+                    <Tag
+                        href={bottomLink}
                         style={bottomRightBanner.bgColor ? { backgroundColor: bottomRightBanner.bgColor } : {}}
                         className={`flex-1 flex items-center justify-between w-full rounded-3xl p-3 sm:p-6 sm:px-8 overflow-hidden group ${!bottomRightBanner.bgColor ? 'bg-blue-200' : ''}`}
                     >
@@ -110,7 +120,9 @@ const Hero = () => {
                             </p>
                         </div>
                         {bottomProductImg && <Image className='w-14 sm:w-35' src={bottomProductImg} alt="" {...bottomProductImgProps} />}
-                    </Link>
+                    </Tag>
+                    )
+                })()}
                 </div>
             </div>
             <CategoriesMarquee />
