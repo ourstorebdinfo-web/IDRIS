@@ -26,7 +26,7 @@ const BestSelling = () => {
     })
 
     return (
-        <div className='px-2 sm:px-6 my-20 max-w-6xl mx-auto'>
+        <div id="best-selling" className='px-2 sm:px-6 my-20 max-w-6xl mx-auto'>
             <Title title='Best Selling' description={`Showing ${listToShow.length < displayQuantity ? listToShow.length : displayQuantity} of ${products.length} products`} href='/shop' />
             <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6'>
                 {products.length === 0 ? (
