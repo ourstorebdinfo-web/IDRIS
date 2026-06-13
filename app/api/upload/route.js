@@ -1,5 +1,3 @@
-import fs from 'fs/promises'
-import path from 'path'
 import { getToken } from 'next-auth/jwt'
 
 export async function POST(req) {
@@ -7,37 +5,51 @@ export async function POST(req) {
     // Only admins may upload files
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     if (!token || token.role !== 'ADMIN') {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { 'content-type': 'application/json' },
-      })
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const body = await req.json()
-    const { image, folder } = body
-    if (!image) return new Response(JSON.stringify({ error: 'No image provided' }), { status: 400, headers: { 'content-type': 'application/json' } })
-
-    // Fallback only: save base64 data URL to public/uploads
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-    await fs.mkdir(uploadsDir, { recursive: true })
-
-    // accept data URLs or remote urls
-    if (image.startsWith('data:')) {
-      const matches = image.match(/^data:(.+);base64,(.+)$/)
-      if (!matches) return new Response(JSON.stringify({ error: 'Invalid data URL' }), { status: 400, headers: { 'content-type': 'application/json' } })
-      const ext = matches[1].split('/')[1].split('+')[0] || 'png'
-      const data = matches[2]
-      const buf = Buffer.from(data, 'base64')
-      const fileName = `upload-${Date.now()}.${ext}`
-      const filePath = path.join(uploadsDir, fileName)
-      await fs.writeFile(filePath, buf)
-      const url = `/uploads/${fileName}`
-      return new Response(JSON.stringify({ url, local: true }), { status: 200, headers: { 'content-type': 'application/json' } })
+    const { image } = body
+    if (!image) {
+      return Response.json({ error: 'No image provided' }, { status: 400 })
     }
 
-    // If it's a URL, return it as-is
-    return new Response(JSON.stringify({ url: image }), { status: 200, headers: { 'content-type': 'application/json' } })
+    // If it's already a URL (not a data URL), return as-is
+    if (!image.startsWith('data:')) {
+      return Response.json({ url: image })
+    }
+
+    // Extract pure base64 from data URL
+    const base64Data = image.replace(/^data:.+;base64,/, '')
+
+    const apiKey = process.env.IMGBB_API_KEY
+    if (!apiKey) {
+      console.error('[upload] IMGBB_API_KEY is not set')
+      return Response.json({ error: 'Image hosting not configured' }, { status: 500 })
+    }
+
+    // Upload to ImgBB
+    const formData = new URLSearchParams()
+    formData.append('key', apiKey)
+    formData.append('image', base64Data)
+
+    const imgbbRes = await fetch('https://api.imgbb.com/1/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const imgbbJson = await imgbbRes.json()
+
+    if (!imgbbJson.success) {
+      console.error('[upload] ImgBB error:', imgbbJson)
+      return Response.json({ error: 'Upload failed: ' + (imgbbJson?.error?.message || 'ImgBB rejected the image') }, { status: 500 })
+    }
+
+    const url = imgbbJson.data.display_url
+    return Response.json({ url })
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Upload failed', details: String(err) }), { status: 500, headers: { 'content-type': 'application/json' } })
+    console.error('[upload] Error:', err)
+    return Response.json({ error: 'Upload failed', details: String(err) }, { status: 500 })
   }
 }
+
