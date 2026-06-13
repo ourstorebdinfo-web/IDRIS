@@ -81,15 +81,15 @@ export default function Cart() {
                                                     </div>
                                                     <div>
                                                         <p className="text-xs text-slate-500">{item.category}</p>
-                                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                        <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                                                             {item.color && (
-                                                                <span className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                                                                    <span className="w-2.5 h-2.5 rounded-full border border-slate-300 shrink-0" style={{ backgroundColor: item.color }}></span>
+                                                                <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-500 px-1 py-px rounded">
+                                                                    <span className="w-2 h-2 rounded-full border border-slate-300 shrink-0" style={{ backgroundColor: item.color }}></span>
                                                                     {getColorName(item.color)}
                                                                 </span>
                                                             )}
                                                             {item.size && (
-                                                                <span className="inline-flex items-center text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                                                <span className="text-[10px] text-slate-500 px-1 py-px rounded">
                                                                     {item.size}
                                                                 </span>
                                                             )}
