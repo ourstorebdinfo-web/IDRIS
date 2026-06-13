@@ -26,7 +26,7 @@ export default function AboutPage() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="rounded-[2rem] border border-slate-100 bg-slate-50/50 p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-100/40">
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
                                     <div>
@@ -45,7 +45,7 @@ export default function AboutPage() {
                                         <p className="mt-3 text-lg font-semibold text-slate-900">Products vetted for quality and value.</p>
                                     </div>
                                 </div>
-                                <div className="rounded-3xl border border-emerald-100 bg-emerald-50/50 p-6 text-slate-700">
+                                <div className="rounded-3xl border border-slate-100 bg-white p-6 text-slate-700">
                                     <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Community first</p>
                                     <p className="mt-3 text-lg leading-7">
                                         Every choice we make is guided by trust, transparency, and the goal of making shopping feel effortless.
@@ -81,7 +81,7 @@ export default function AboutPage() {
                                 description: 'Helpful experts ready to answer questions and resolve issues.'
                             },
                         ].map((item) => (
-                            <div key={item.title} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-8 shadow-sm transition hover:border-emerald-500/50 hover:bg-white">
+                            <div key={item.title} className="rounded-3xl border border-slate-100 bg-white p-8 shadow-sm transition hover:border-emerald-500/50">
                                 <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                                     <item.icon size={24} />
                                 </div>
@@ -108,7 +108,7 @@ export default function AboutPage() {
                                 { title: 'Quality', description: 'Products chosen for durability and everyday use.' },
                                 { title: 'Community', description: 'Support and communication that keeps shoppers first.' },
                             ].map((item) => (
-                                <div key={item.title} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6 shadow-sm">
+                                <div key={item.title} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
                                     <h3 className="text-xl font-semibold text-slate-900">{item.title}</h3>
                                     <p className="mt-3 text-slate-600 leading-7">{item.description}</p>
                                 </div>
