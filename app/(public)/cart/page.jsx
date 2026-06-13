@@ -80,7 +80,6 @@ export default function Cart() {
                                                         <Image src={parseJsonArray(item.images)[0] || '/uploads/placeholder.svg'} className="h-14 w-auto" alt={item.name} width={45} height={45} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-500">{item.category}</p>
                                                         <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                                                             {item.color && (
                                                                 <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-500 px-1 py-px rounded">
