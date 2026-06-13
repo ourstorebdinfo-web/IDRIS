@@ -80,8 +80,20 @@ export default function Cart() {
                                                         <Image src={parseJsonArray(item.images)[0] || '/uploads/placeholder.svg'} className="h-14 w-auto" alt={item.name} width={45} height={45} />
                                                     </div>
                                                     <div>
-                                                        <p className="max-sm:text-sm font-semibold text-slate-800">{item.name}</p>
                                                         <p className="text-xs text-slate-500">{item.category}</p>
+                                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                            {item.color && (
+                                                                <span className="inline-flex items-center gap-1 text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                                                    <span className="w-2.5 h-2.5 rounded-full border border-slate-300 shrink-0" style={{ backgroundColor: item.color }}></span>
+                                                                    {getColorName(item.color)}
+                                                                </span>
+                                                            )}
+                                                            {item.size && (
+                                                                <span className="inline-flex items-center text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                                                    {item.size}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <p className="mt-1 font-medium text-slate-700">{currency}{item.price}</p>
                                                     </div>
                                                 </div>
