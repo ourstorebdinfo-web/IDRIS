@@ -5,7 +5,7 @@ export default function AboutPage() {
     return (
         <main className="bg-white text-slate-800">
             <section className="relative overflow-hidden">
-                <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
+                <div className="relative max-w-7xl mx-auto px-3 sm:px-6 py-24 lg:py-32">
                     <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
                         <div className="space-y-6">
                             <p className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm uppercase tracking-[0.2em] text-emerald-700">
@@ -26,9 +26,9 @@ export default function AboutPage() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-3 sm:p-8 shadow-xl shadow-slate-100/40">
                             <div className="space-y-6">
-                                <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                <div className="flex items-center justify-between gap-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
                                     <div>
                                         <p className="text-sm uppercase tracking-[0.22em] text-emerald-600">Our mission</p>
                                         <h2 className="mt-3 text-2xl font-semibold text-slate-900">Your everyday essentials, simplified.</h2>
@@ -36,16 +36,16 @@ export default function AboutPage() {
                                     <Sparkles size={36} className="text-emerald-500" />
                                 </div>
                                 <div className="grid gap-4 sm:grid-cols-2">
-                                    <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <div className="rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
                                         <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Fast support</p>
                                         <p className="mt-3 text-lg font-semibold text-slate-900">Responsive help when you need it.</p>
                                     </div>
-                                    <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                    <div className="rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
                                         <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Authentic catalog</p>
                                         <p className="mt-3 text-lg font-semibold text-slate-900">Products vetted for quality and value.</p>
                                     </div>
                                 </div>
-                                <div className="rounded-3xl border border-slate-100 bg-white p-6 text-slate-700">
+                                <div className="rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 text-slate-700">
                                     <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Community first</p>
                                     <p className="mt-3 text-lg leading-7">
                                         Every choice we make is guided by trust, transparency, and the goal of making shopping feel effortless.
@@ -58,7 +58,7 @@ export default function AboutPage() {
             </section>
 
             <section className="border-t border-slate-100 py-20">
-                <div className="max-w-6xl mx-auto px-6">
+                <div className="max-w-6xl mx-auto px-3 sm:px-6">
                     <div className="text-center mb-12">
                         <p className="text-sm uppercase tracking-[0.3em] text-emerald-600">Why choose us</p>
                         <h2 className="mt-4 text-3xl font-semibold text-slate-900 sm:text-4xl">Built for people who expect more from shopping.</h2>
@@ -94,7 +94,7 @@ export default function AboutPage() {
             </section>
 
             <section className="py-20 border-t border-slate-100">
-                <div className="max-w-6xl mx-auto px-6">
+                <div className="max-w-6xl mx-auto px-3 sm:px-6">
                     <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
                         <div>
                             <p className="text-sm uppercase tracking-[0.3em] text-emerald-600">Our values</p>

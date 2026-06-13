@@ -54,7 +54,7 @@ export default function ContactPage() {
     return (
         <main className="bg-white text-slate-800">
             <section className="relative overflow-hidden">
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 lg:py-32">
+                <div className="relative max-w-7xl mx-auto px-3 sm:px-6 py-24 lg:py-32">
                     <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
                         <div className="space-y-6">
                             <p className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm uppercase tracking-[0.2em] text-emerald-700">
@@ -67,28 +67,28 @@ export default function ContactPage() {
                                 Reach out for support, partnerships, or product guidance. Our team is ready to help you find the right gear at the right price.
                             </p>
                         </div>
-                        <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-3 sm:p-8 shadow-xl shadow-slate-100/40">
                             <div className="space-y-6">
-                                <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                <div className="rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
                                     <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Office hours</p>
                                     <p className="mt-3 text-xl font-semibold text-slate-900">Mon – Fri, 9am – 6pm</p>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+                                    <div className="flex items-start gap-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm">
                                         <Phone size={24} className="text-emerald-600" />
                                         <div>
                                             <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Phone</p>
                                             <p className="mt-2 text-lg text-slate-950 font-medium">{settings.phone}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+                                    <div className="flex items-start gap-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm">
                                         <Mail size={24} className="text-emerald-600" />
                                         <div>
                                             <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Email</p>
                                             <p className="mt-2 text-lg text-slate-950 font-medium">{settings.email}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+                                    <div className="flex items-start gap-4 rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 shadow-sm">
                                         <MapPin size={24} className="text-emerald-600" />
                                         <div>
                                             <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Address</p>
@@ -96,7 +96,7 @@ export default function ContactPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+                                <div className="rounded-2xl sm:rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
                                     <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Follow us</p>
                                     <div className="mt-4 flex flex-wrap gap-3 text-slate-600">
                                         {(parseSocialLinks(settings.socialLinks) || [])
@@ -128,9 +128,9 @@ export default function ContactPage() {
             </section>
 
             <section className="py-20 border-t border-slate-100">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="max-w-6xl mx-auto px-3 sm:px-6">
                     <div className="grid gap-10 xl:grid-cols-[1.2fr_0.8fr]">
-                        <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-3 sm:p-8 shadow-xl shadow-slate-100/40">
                             <h2 className="text-3xl font-semibold text-slate-900">Send us a message</h2>
                             <p className="mt-4 text-slate-600 leading-7">Have a question or a product request? Drop your details below and we’ll reply quickly.</p>
                             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -155,7 +155,7 @@ export default function ContactPage() {
                             </form>
                         </div>
                         <div className="space-y-6">
-                            <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
+                            <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-3 sm:p-8 shadow-xl shadow-slate-100/40">
                                 <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Need help now?</p>
                                 <h2 className="mt-4 text-3xl font-semibold text-slate-900">Chat with our support team.</h2>
                                 <p className="mt-4 text-slate-600 leading-7">Our support specialists are available to help with orders, shipping, returns, and product questions.</p>
