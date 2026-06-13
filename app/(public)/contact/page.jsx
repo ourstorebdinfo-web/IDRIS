@@ -54,20 +54,20 @@ export default function ContactPage() {
     return (
         <main className="bg-white text-slate-800">
             <section className="relative overflow-hidden">
-                <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 lg:py-32">
                     <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
                         <div className="space-y-6">
                             <p className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm uppercase tracking-[0.2em] text-emerald-700">
                                 <Mail size={16} /> Let’s talk
                             </p>
-                            <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
                                 Questions? feedback? Let’s connect.
                             </h1>
                             <p className="max-w-2xl text-slate-600 text-base sm:text-lg leading-8">
                                 Reach out for support, partnerships, or product guidance. Our team is ready to help you find the right gear at the right price.
                             </p>
                         </div>
-                        <div className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
                             <div className="space-y-6">
                                 <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
                                     <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Office hours</p>
@@ -128,9 +128,9 @@ export default function ContactPage() {
             </section>
 
             <section className="py-20 border-t border-slate-100">
-                <div className="max-w-6xl mx-auto px-6">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
                     <div className="grid gap-10 xl:grid-cols-[1.2fr_0.8fr]">
-                        <div className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-100/40">
+                        <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
                             <h2 className="text-3xl font-semibold text-slate-900">Send us a message</h2>
                             <p className="mt-4 text-slate-600 leading-7">Have a question or a product request? Drop your details below and we’ll reply quickly.</p>
                             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -155,7 +155,7 @@ export default function ContactPage() {
                             </form>
                         </div>
                         <div className="space-y-6">
-                            <div className="rounded-[2rem] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-100/40">
+                            <div className="rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-8 shadow-xl shadow-slate-100/40">
                                 <p className="text-sm uppercase tracking-[0.2em] text-emerald-600">Need help now?</p>
                                 <h2 className="mt-4 text-3xl font-semibold text-slate-900">Chat with our support team.</h2>
                                 <p className="mt-4 text-slate-600 leading-7">Our support specialists are available to help with orders, shipping, returns, and product questions.</p>
