@@ -1,7 +1,10 @@
 "use client"
 import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useSiteSettings } from '@/lib/context/SiteSettingsContext'
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const sanitize = (str) => str.replace(/[<>]/g, '')
 
 const parseSocialLinks = (value) => {
     if (Array.isArray(value)) return value
@@ -18,30 +21,63 @@ export default function ContactClient() {
     const settings = rawSettings || { phone: '+1 (800) 322-1384', email: 'support@gocart.com', address: '425 Market Street, San Francisco, CA', socialLinks: [] }
     const [form, setForm] = useState({ name: '', email: '', message: '' })
     const [status, setStatus] = useState('')
+    const [statusType, setStatusType] = useState('') // 'success' | 'error'
+    const [submitting, setSubmitting] = useState(false)
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value })
-    }
+    const handleChange = useCallback((e) => {
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    }, [])
+
+    const validate = useCallback(() => {
+        const trimmedName = form.name.trim()
+        const trimmedEmail = form.email.trim()
+        const trimmedMessage = form.message.trim()
+
+        if (!trimmedName || trimmedName.length < 2) return 'Name must be at least 2 characters.'
+        if (trimmedName.length > 100) return 'Name must be under 100 characters.'
+        if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) return 'Please enter a valid email address.'
+        if (!trimmedMessage || trimmedMessage.length < 10) return 'Message must be at least 10 characters.'
+        if (trimmedMessage.length > 2000) return 'Message must be under 2000 characters.'
+        return null
+    }, [form])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        const validationError = validate()
+        if (validationError) {
+            setStatus(validationError)
+            setStatusType('error')
+            return
+        }
+        setSubmitting(true)
         setStatus('Sending message...')
+        setStatusType('')
         try {
+            const sanitizedForm = {
+                name: sanitize(form.name.trim()),
+                email: form.email.trim().toLowerCase(),
+                message: sanitize(form.message.trim()),
+            }
             const res = await fetch('/api/contact-messages', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify(form),
+                body: JSON.stringify(sanitizedForm),
             })
             if (res.ok) {
                 setStatus('Thanks for your message! We will get back to you soon.')
+                setStatusType('success')
                 setForm({ name: '', email: '', message: '' })
             } else {
                 const error = await res.json()
                 setStatus(error?.error || 'Failed to send message')
+                setStatusType('error')
             }
         } catch (err) {
             console.error(err)
             setStatus('Failed to send message')
+            setStatusType('error')
+        } finally {
+            setSubmitting(false)
         }
     }
 
@@ -148,10 +184,10 @@ export default function ContactClient() {
                                     Message
                                     <textarea name="message" value={form.message} onChange={handleChange} rows="6" required className="w-full rounded-3xl border border-slate-200 bg-white px-4 py-4 text-slate-900 outline-none transition focus:border-emerald-500 shadow-sm" />
                                 </label>
-                                <button type="submit" className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-8 py-3 text-sm font-semibold text-white shadow-xl shadow-emerald-600/10 transition hover:bg-emerald-700">
-                                    Send message
+                                <button type="submit" disabled={submitting} className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-8 py-3 text-sm font-semibold text-white shadow-xl shadow-emerald-600/10 transition hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed">
+                                    {submitting ? 'Sending...' : 'Send message'}
                                 </button>
-                                {status ? <p className="mt-4 text-sm text-emerald-600">{status}</p> : null}
+                                {status ? <p className={`mt-4 text-sm ${statusType === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>{status}</p> : null}
                             </form>
                         </div>
                         <div className="space-y-6">

@@ -1,5 +1,10 @@
 import Link from 'next/link'
 
+export const metadata = {
+    title: 'Page Not Found | GoCart',
+    description: 'The page you are looking for does not exist or has been moved.',
+}
+
 export default function NotFound() {
     return (
         <div className="min-h-screen flex items-center justify-center px-6">
@@ -11,12 +16,20 @@ export default function NotFound() {
                 <p className="text-slate-500 mb-8 text-sm leading-relaxed">
                     আপনি যে পেজটি খুঁজছেন সেটি সরানো হয়েছে বা আর নেই।
                 </p>
-                <Link
-                    href="/"
-                    className="inline-block bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 active:scale-95 transition-all text-sm font-medium"
-                >
-                    হোম পেজে যান
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Link
+                        href="/"
+                        className="inline-block bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 active:scale-95 transition-all text-sm font-medium"
+                    >
+                        হোম পেজে যান
+                    </Link>
+                    <Link
+                        href="/shop"
+                        className="inline-block border border-slate-300 text-slate-700 px-8 py-3 rounded-lg hover:bg-slate-50 active:scale-95 transition-all text-sm font-medium"
+                    >
+                        শপ দেখুন
+                    </Link>
+                </div>
             </div>
         </div>
     )

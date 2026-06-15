@@ -1,8 +1,11 @@
 import prisma from '@/lib/prisma'
 import { getToken } from 'next-auth/jwt'
 import { getCombinedRatings } from '@/lib/demoReviews'
+import { rateLimit } from '@/lib/rateLimit'
 
 export const dynamic = 'force-dynamic'
+
+const ratingsLimiter = rateLimit({ interval: 60000, limit: 10 })
 
 function getUserIdFromToken(token) {
   return token?.sub || token?.id || token?.user?.id
@@ -102,6 +105,15 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
+    // Rate limiting
+    const ip = req.headers.get('x-forwarded-for') || 'unknown'
+    if (!ratingsLimiter.check(`ratings-${ip}`)) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please wait a moment.' }), {
+        status: 429,
+        headers: { 'content-type': 'application/json' },
+      })
+    }
+
     const body = await req.json()
     const { productId, rating, review = '', name, orderId } = body
 
@@ -111,6 +123,9 @@ export async function POST(req) {
         headers: { 'content-type': 'application/json' },
       })
     }
+
+    // Validate review text length
+    const sanitizedReview = typeof review === 'string' ? review.trim().slice(0, 1000) : ''
 
     let userId = null
     try {
@@ -128,7 +143,7 @@ export async function POST(req) {
         data: {
           productId,
           rating: parseInt(rating),
-          review,
+          review: sanitizedReview,
           name,
           userId: userId || null,
           orderId: orderId || null,
@@ -198,7 +213,7 @@ export async function POST(req) {
         where: { id: existingRating.id },
         data: {
           rating: parseInt(rating),
-          review,
+          review: sanitizedReview,
         },
       })
     } else {
@@ -208,7 +223,7 @@ export async function POST(req) {
           productId,
           orderId,
           rating: parseInt(rating),
-          review,
+          review: sanitizedReview,
         },
       })
     }

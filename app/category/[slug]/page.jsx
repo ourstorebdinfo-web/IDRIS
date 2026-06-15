@@ -1,8 +1,48 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+import { unstable_cache } from 'next/cache'
 import ProductCard from '@/components/ProductCard'
 
 export const revalidate = 60
+
+const getCategory = unstable_cache(
+  async (slug) => {
+    return prisma.category.findUnique({ where: { slug } })
+  },
+  ['category-by-slug'],
+  { revalidate: 60, tags: ['categories'] }
+)
+
+const getCategoryProducts = unstable_cache(
+  async (categoryId, categoryName) => {
+    return prisma.product.findMany({
+      where: {
+        OR: [
+          { categoryId },
+          { category: categoryName },
+        ],
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { ratings: true }
+    })
+  },
+  ['category-products'],
+  { revalidate: 60, tags: ['products'] }
+)
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const category = await getCategory(slug)
+  if (!category) return { title: 'Category Not Found | GoCart' }
+  return {
+    title: `${category.name} — Shop ${category.name} Products | GoCart`,
+    description: category.description || `Browse the best ${category.name} products at GoCart. Quality items with fast delivery.`,
+    openGraph: {
+      title: `${category.name} | GoCart`,
+      description: category.description || `Shop ${category.name} products at GoCart.`,
+    },
+  }
+}
 
 export async function generateStaticParams() {
   try {
@@ -16,7 +56,7 @@ export async function generateStaticParams() {
 
 export default async function CategoryPage({ params }) {
   const { slug } = await params
-  const category = await prisma.category.findUnique({ where: { slug } })
+  const category = await getCategory(slug)
 
   if (!category) {
     return (
@@ -29,16 +69,7 @@ export default async function CategoryPage({ params }) {
     )
   }
 
-  const products = await prisma.product.findMany({
-    where: {
-      OR: [
-        { categoryId: category.id },
-        { category: category.name },
-      ],
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { ratings: true }
-  })
+  const products = await getCategoryProducts(category.id, category.name)
 
   return (
     <div className="mx-2 sm:mx-6 mb-28">
@@ -64,3 +95,4 @@ export default async function CategoryPage({ params }) {
     </div>
   )
 }
+

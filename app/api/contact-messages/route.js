@@ -38,7 +38,23 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: 'Name, email, and message are required' }), { status: 400, headers: { 'content-type': 'application/json' } })
     }
 
-    const contactMessage = await prisma.contactMessage.create({ data: { name, email, message } })
+    // Server-side validation
+    const trimmedName = String(name).trim().slice(0, 100)
+    const trimmedEmail = String(email).trim().toLowerCase().slice(0, 254)
+    const trimmedMessage = String(message).trim().slice(0, 2000)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (trimmedName.length < 2) {
+      return new Response(JSON.stringify({ error: 'Name must be at least 2 characters' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    }
+    if (!emailRegex.test(trimmedEmail)) {
+      return new Response(JSON.stringify({ error: 'Invalid email address' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    }
+    if (trimmedMessage.length < 10) {
+      return new Response(JSON.stringify({ error: 'Message must be at least 10 characters' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    }
+
+    const contactMessage = await prisma.contactMessage.create({ data: { name: trimmedName, email: trimmedEmail, message: trimmedMessage } })
     return new Response(JSON.stringify(contactMessage), { status: 201, headers: { 'content-type': 'application/json' } })
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to submit message' }), { status: 500, headers: { 'content-type': 'application/json' } })

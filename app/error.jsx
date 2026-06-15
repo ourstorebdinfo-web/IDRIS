@@ -1,6 +1,12 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export default function Error({ error, reset }) {
+    useEffect(() => {
+        console.error('Application error:', error)
+    }, [error])
+
     return (
         <div className="min-h-screen flex items-center justify-center px-6">
             <div className="text-center p-8 max-w-md">
@@ -14,15 +20,28 @@ export default function Error({ error, reset }) {
                 <h2 className="text-2xl font-bold text-slate-800 mb-3">
                     কিছু একটা ভুল হয়েছে
                 </h2>
-                <p className="text-slate-500 mb-8 text-sm leading-relaxed">
+                <p className="text-slate-500 mb-2 text-sm leading-relaxed">
                     পেজটি লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
                 </p>
-                <button
-                    onClick={() => reset()}
-                    className="bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 active:scale-95 transition-all text-sm font-medium"
-                >
-                    আবার চেষ্টা করুন
-                </button>
+                {process.env.NODE_ENV === 'development' && error?.message && (
+                    <p className="text-xs text-red-400 bg-red-50 rounded-lg p-3 mb-4 text-left font-mono break-all">
+                        {error.message}
+                    </p>
+                )}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+                    <button
+                        onClick={() => reset()}
+                        className="bg-slate-800 text-white px-8 py-3 rounded-lg hover:bg-slate-900 active:scale-95 transition-all text-sm font-medium"
+                    >
+                        আবার চেষ্টা করুন
+                    </button>
+                    <button
+                        onClick={() => window.location.href = '/'}
+                        className="border border-slate-300 text-slate-700 px-8 py-3 rounded-lg hover:bg-slate-50 active:scale-95 transition-all text-sm font-medium"
+                    >
+                        হোম পেজে যান
+                    </button>
+                </div>
             </div>
         </div>
     )

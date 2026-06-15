@@ -1,51 +1,82 @@
 'use client'
 import { useSession, signIn } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Package, ArrowRight, ShoppingBag } from 'lucide-react'
 import PageTitle from '@/components/PageTitle'
 import { parseJsonArray, getColorName } from '@/lib/utils'
 
+const getStatusStyle = (statusStr) => {
+    const s = statusStr?.toUpperCase() || ''
+    if (s.includes('PLACE')) return 'bg-blue-50 text-blue-700 border-blue-200'
+    if (s.includes('PROCESS') || s.includes('PEND')) return 'bg-amber-50 text-amber-700 border-amber-200'
+    if (s.includes('DELIVER') || s.includes('SHIP') || s.includes('COMPLET') || s.includes('SUCCESS')) return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    if (s.includes('CANCEL') || s.includes('FAIL') || s.includes('REJECT')) return 'bg-rose-50 text-rose-700 border-rose-200'
+    return 'bg-slate-50 text-slate-700 border-slate-200'
+}
+
+const formatStatusText = (statusStr) => {
+    return statusStr ? statusStr.replace(/_/g, ' ') : ''
+}
+
 export default function OrdersClient() {
     const { data: session, status } = useSession()
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '৳'
 
     useEffect(() => {
+        const controller = new AbortController()
         if (status === 'authenticated') {
             const fetchOrders = async () => {
                 try {
-                    const res = await fetch('/api/orders')
+                    setError(null)
+                    const res = await fetch('/api/orders', { signal: controller.signal })
                     if (res.ok) {
                         const data = await res.json()
                         setOrders(data.orders || [])
+                    } else {
+                        setError('Failed to load orders. Please try again.')
                     }
                 } catch (err) {
-                    console.error('Error fetching orders:', err)
+                    if (err.name !== 'AbortError') {
+                        console.error('Error fetching orders:', err)
+                        setError('Failed to load orders. Please try again.')
+                    }
                 } finally {
-                    setLoading(false)
+                    if (!controller.signal.aborted) setLoading(false)
                 }
             }
             fetchOrders()
         } else if (status === 'unauthenticated') {
             setLoading(false)
         }
+        return () => controller.abort()
     }, [status])
 
-    const getStatusStyle = (statusStr) => {
-        const s = statusStr?.toUpperCase() || ''
-        if (s.includes('PLACE')) return 'bg-blue-50 text-blue-700 border-blue-200'
-        if (s.includes('PROCESS') || s.includes('PEND')) return 'bg-amber-50 text-amber-700 border-amber-200'
-        if (s.includes('DELIVER') || s.includes('SHIP') || s.includes('COMPLET') || s.includes('SUCCESS')) return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-        if (s.includes('CANCEL') || s.includes('FAIL') || s.includes('REJECT')) return 'bg-rose-50 text-rose-700 border-rose-200'
-        return 'bg-slate-50 text-slate-700 border-slate-200'
-    }
-
-    const formatStatusText = (statusStr) => {
-        return statusStr ? statusStr.replace(/_/g, ' ') : ''
-    }
+    const handleRetry = useCallback(() => {
+        setLoading(true)
+        setError(null)
+        const fetchOrders = async () => {
+            try {
+                const res = await fetch('/api/orders')
+                if (res.ok) {
+                    const data = await res.json()
+                    setOrders(data.orders || [])
+                } else {
+                    setError('Failed to load orders. Please try again.')
+                }
+            } catch (err) {
+                console.error('Error fetching orders:', err)
+                setError('Failed to load orders. Please try again.')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchOrders()
+    }, [])
 
     if (status === 'loading' || (loading && status === 'authenticated')) {
         return (
@@ -81,6 +112,13 @@ export default function OrdersClient() {
     return (
         <div className="min-h-screen max-w-7xl mx-auto px-6 text-slate-800 pb-16">
             <PageTitle heading="My Orders" text="Track and manage your order history" path="/shop" linkText="Continue Shopping" />
+
+            {error && (
+                <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-center max-w-lg mx-auto mt-4 mb-4">
+                    <p className="text-sm text-rose-700">{error}</p>
+                    <button onClick={handleRetry} className="mt-2 text-sm font-medium text-rose-600 hover:text-rose-800 underline">Try Again</button>
+                </div>
+            )}
 
             {orders.length === 0 ? (
                 <div className="bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl p-12 text-center max-w-lg mx-auto mt-8">

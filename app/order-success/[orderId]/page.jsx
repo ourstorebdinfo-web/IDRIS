@@ -1,5 +1,11 @@
 import Link from 'next/link'
 
+export const metadata = {
+  title: 'Order Successful | GoCart',
+  description: 'Your order has been placed successfully on GoCart.',
+  robots: { index: false, follow: false },
+}
+
 export default async function OrderSuccessPage({ params }) {
   const { orderId } = await params
 

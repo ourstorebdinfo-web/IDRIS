@@ -90,7 +90,7 @@ const ProductCard = ({ product, priority = false }) => {
     )
 }
 
-export const ProductCardSkeleton = () => {
+export const ProductCardSkeleton = React.memo(() => {
     return (
         <div className='w-full animate-pulse'>
             <div className='bg-slate-200 w-full rounded-lg aspect-square' />
@@ -103,6 +103,6 @@ export const ProductCardSkeleton = () => {
             </div>
         </div>
     )
-}
+})
 
-export default ProductCard
+export default React.memo(ProductCard)

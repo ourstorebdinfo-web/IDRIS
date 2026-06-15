@@ -103,4 +103,6 @@ const OrderItem = ({ order }) => {
     )
 }
 
-export default OrderItem
+import React from 'react'
+
+export default React.memo(OrderItem)

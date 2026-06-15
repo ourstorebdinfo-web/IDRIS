@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/components/Loading'
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function SignInPage() {
   const router = useRouter()
@@ -19,26 +21,42 @@ export default function SignInPage() {
     }
   }, [session, status, router])
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = useCallback(async (event) => {
     event.preventDefault()
     setError('')
-    setLoading(true)
 
-    const response = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-      callbackUrl: '/admin',
-    })
-
-    if (response?.error) {
-      setError('Invalid email or password.')
-      setLoading(false)
+    const trimmedEmail = email.trim().toLowerCase()
+    if (!trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+      setError('Please enter a valid email address.')
+      return
+    }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters.')
       return
     }
 
-    router.push('/admin')
-  }
+    setLoading(true)
+
+    try {
+      const response = await signIn('credentials', {
+        redirect: false,
+        email: trimmedEmail,
+        password,
+        callbackUrl: '/admin',
+      })
+
+      if (response?.error) {
+        setError('Invalid email or password.')
+        setLoading(false)
+        return
+      }
+
+      router.push('/admin')
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
+      setLoading(false)
+    }
+  }, [email, password, router])
 
   if (status === 'loading' || (status === 'authenticated' && session?.user?.role === 'ADMIN')) {
     return <Loading />
@@ -60,6 +78,8 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              maxLength={254}
+              autoComplete="email"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-500 focus:outline-none"
             />
           </div>
@@ -73,6 +93,9 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
+              maxLength={128}
+              autoComplete="current-password"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-500 focus:outline-none"
             />
           </div>
