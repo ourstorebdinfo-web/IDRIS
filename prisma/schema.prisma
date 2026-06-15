@@ -50,6 +50,13 @@ model Product {
 
     orderItems OrderItem[]
     ratings    Rating[]
+
+    @@index([categoryId])
+    @@index([category])
+    @@index([latest])
+    @@index([bestSelling])
+    @@index([featured])
+    @@index([createdAt])
 }
 
 model Category {
@@ -84,6 +91,11 @@ model Order {
 
     user    User?   @relation(fields: [userId], references: [id])
     address Address @relation(fields: [addressId], references: [id])
+
+    @@index([userId])
+    @@index([status])
+    @@index([createdAt])
+    @@index([isDeleted])
 }
 
 model OrderItem {
@@ -97,6 +109,9 @@ model OrderItem {
 
     order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
     product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@index([orderId])
+    @@index([productId])
 }
 
 model Rating {
@@ -112,6 +127,9 @@ model Rating {
 
     user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
     product Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@index([productId])
+    @@index([userId])
 }
 
 model Address {
@@ -129,6 +147,8 @@ model Address {
 
     orders Order[]
     user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model Coupon {

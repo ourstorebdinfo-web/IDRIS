@@ -1,6 +1,7 @@
 "use client"
 import { Search, ShoppingCart, Menu, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -56,7 +57,7 @@ const Navbar = () => {
 
                     <Link href="/" className="relative flex items-center gap-3 text-slate-700">
                     {(showLogo && logoImage) ? (
-                            <img src={logoImage} alt="GoCart logo" className="h-10 w-auto rounded-2xl object-contain" />
+                            <Image src={logoImage} alt="Site logo" width={120} height={40} className="h-10 w-auto rounded-2xl object-contain" />
                         ) : (
                             <span className="text-4xl font-semibold">
                                 <span className="text-green-600">{siteName.charAt(0)}</span>{siteName.slice(1)}<span className="text-green-600 text-5xl leading-0">.</span>
@@ -116,7 +117,7 @@ const Navbar = () => {
                         {session?.user ? (
                             <div className="flex items-center gap-3">
                                 {session.user.image
-                                    ? <img src={session.user.image} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                    ? <Image src={session.user.image} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                                     : <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">{(session.user.name || session.user.email || '?')[0].toUpperCase()}</div>
                                 }
                                 <span className="text-sm">{session.user.name || session.user.email}</span>
@@ -218,7 +219,7 @@ const Navbar = () => {
                     {session?.user ? (
                         <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
                             {session.user.image
-                                ? <img src={session.user.image} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                ? <Image src={session.user.image} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
                                 : <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">{(session.user.name || session.user.email || '?')[0].toUpperCase()}</div>
                             }
                             <span className="text-sm flex-1 truncate">{session.user.name || session.user.email}</span>

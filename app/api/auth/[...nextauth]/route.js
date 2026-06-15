@@ -26,15 +26,12 @@ export const authOptions = {
           const { email, password } = credentials
           const user = await prisma.user.findUnique({ where: { email } })
           if (!user || !user.password) {
-            console.log("[auth] No user found or no password for:", email)
             return null
           }
           const isValid = await compare(password, user.password)
           if (!isValid) {
-            console.log("[auth] Invalid password for:", email)
             return null
           }
-          console.log("[auth] Authorized:", email, "role:", user.role)
           return {
             id: user.id,
             email: user.email,

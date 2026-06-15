@@ -1,8 +1,13 @@
 "use client"
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
-import OrdersAreaChart from "@/components/OrdersAreaChart"
+import dynamic from "next/dynamic"
 import { CircleDollarSignIcon, ShoppingBasketIcon, TagsIcon, StarIcon } from "lucide-react"
+
+const OrdersAreaChart = dynamic(() => import("@/components/OrdersAreaChart"), {
+    ssr: false,
+    loading: () => <div className="w-full h-80 bg-slate-100 animate-pulse rounded-lg" />
+})
 
 export default function AdminDashboard() {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '৳'

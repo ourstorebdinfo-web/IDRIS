@@ -66,7 +66,7 @@ const Footer = () => {
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const res = await fetch('/api/categories', { cache: 'no-store' })
+                const res = await fetch('/api/categories')
                 if (!res.ok) return
                 const categories = await res.json()
                 if (!Array.isArray(categories)) return

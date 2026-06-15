@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import prisma from '@/lib/prisma'
+import { getToken } from 'next-auth/jwt'
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null
 
@@ -12,8 +13,15 @@ export async function POST(req) {
     const { orderId, currency = 'usd' } = body
     if (!orderId) return new Response(JSON.stringify({ error: 'Missing orderId' }), { status: 400, headers: { 'content-type': 'application/json' } })
 
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+
     const order = await prisma.order.findUnique({ where: { id: orderId } })
     if (!order) return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404, headers: { 'content-type': 'application/json' } })
+
+    // Verify ownership: if order has a userId, the token must match
+    if (order.userId && (!token || token.sub !== order.userId)) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 403, headers: { 'content-type': 'application/json' } })
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(order.total * 100),

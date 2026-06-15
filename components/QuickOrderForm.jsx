@@ -141,8 +141,8 @@ const QuickOrderForm = ({ product, totalPrice, items }) => {
                 orderItems = [{
                     productId: product.id,
                     quantity: 1,
-                    color: product.color || null,
-                    size: product.size || null
+                    color: null,
+                    size: null
                 }]
             }
 
@@ -168,7 +168,7 @@ const QuickOrderForm = ({ product, totalPrice, items }) => {
             })
             if (!orderRes.ok) {
                 const orderErr = await orderRes.json().catch(() => ({}))
-                toast.error(orderErr?.error || 'অর্ডার সাবমিট করতে সমস্যা হয়েছে')
+                toast.error(orderErr?.error || 'অর্ডার সাবমিট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।')
                 setIsSubmitting(false)
                 return
             }

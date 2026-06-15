@@ -3,7 +3,7 @@
 import { addToCart } from "@/lib/features/cart/cartSlice";
 import { StarIcon, TagIcon, EarthIcon, CreditCardIcon, UserIcon, ShoppingCart, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { parseJsonArray, getColorName } from '@/lib/utils'
 import Counter from "./Counter";
@@ -44,8 +44,8 @@ const ProductDetails = ({ product }) => {
     const [selectedRating, setSelectedRating] = useState(0);
     const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-    const colors = parseJsonArray(product?.colors)
-    const sizes = parseJsonArray(product?.sizes)
+    const colors = useMemo(() => parseJsonArray(product?.colors), [product?.colors])
+    const sizes = useMemo(() => parseJsonArray(product?.sizes), [product?.sizes])
 
     const [selectedColor, setSelectedColor] = useState('')
     const [selectedSize, setSelectedSize] = useState('')
@@ -90,7 +90,7 @@ const ProductDetails = ({ product }) => {
         if (productId) {
             fetchRatingInfo()
         }
-    }, [productId, colors, sizes])
+    }, [productId])
 
     const submitRating = async (value) => {
         if (!ratingInfo.canRate || !ratingInfo.orderId || isSubmittingRating) return

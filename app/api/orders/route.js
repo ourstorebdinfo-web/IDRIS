@@ -1,5 +1,8 @@
 import prisma from '@/lib/prisma'
 import { getToken } from 'next-auth/jwt'
+import { rateLimit } from '@/lib/rateLimit'
+
+const orderLimiter = rateLimit({ interval: 60000, limit: 10 })
 
 function getUserIdFromToken(token) {
   return token?.sub || token?.id || token?.user?.id
@@ -35,35 +38,44 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
+    // Rate limiting
+    const ip = req.headers.get('x-forwarded-for') || 'unknown'
+    if (!orderLimiter.check(`order-${ip}`)) {
+      return new Response(JSON.stringify({ error: 'Too many requests. Please wait a moment.' }), { status: 429, headers: { 'content-type': 'application/json' } })
+    }
+
     // allow guest checkout: token optional
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     const userId = token ? getUserIdFromToken(token) : undefined
     const body = await req.json()
     const { addressId, items, paymentMethod, coupon, deliveryCharge, transactionId } = body
-    if (!addressId) return new Response(JSON.stringify({ error: 'Missing addressId' }), { status: 400, headers: { 'content-type': 'application/json' } })
-    if (!items || !Array.isArray(items) || items.length === 0) return new Response(JSON.stringify({ error: 'Cart is empty' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    if (!addressId) return new Response(JSON.stringify({ error: 'ঠিকানা সিলেক্ট করুন' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    if (!items || !Array.isArray(items) || items.length === 0) return new Response(JSON.stringify({ error: 'কার্ট খালি, অর্ডার করা যাচ্ছে না' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    if (!paymentMethod || typeof paymentMethod !== 'string') return new Response(JSON.stringify({ error: 'পেমেন্ট মেথড সিলেক্ট করুন' }), { status: 400, headers: { 'content-type': 'application/json' } })
 
     // compute total and verify products
     let subtotal = 0
     const orderItemsData = []
     // verify address exists to avoid foreign key errors
     const addrExists = await prisma.address.findUnique({ where: { id: addressId } })
-    if (!addrExists) return new Response(JSON.stringify({ error: `Address not found: ${addressId}` }), { status: 400, headers: { 'content-type': 'application/json' } })
-    const productIds = items.map(it => it.productId)
+    if (!addrExists) return new Response(JSON.stringify({ error: 'ঠিকানা খুঁজে পাওয়া যায়নি, আবার চেষ্টা করুন' }), { status: 400, headers: { 'content-type': 'application/json' } })
+    const productIds = items.map(it => it.productId || it.id).filter(Boolean)
+    if (productIds.length === 0) return new Response(JSON.stringify({ error: 'পণ্যের তথ্য পাওয়া যায়নি' }), { status: 400, headers: { 'content-type': 'application/json' } })
     const products = await prisma.product.findMany({
       where: { id: { in: productIds } }
     })
     const productMap = new Map(products.map(p => [p.id, p]))
 
     for (const it of items) {
-      const product = productMap.get(it.productId)
-      if (!product) return new Response(JSON.stringify({ error: `Product not found: ${it.productId}` }), { status: 400, headers: { 'content-type': 'application/json' } })
+      const pid = it.productId || it.id
+      const product = productMap.get(pid)
+      if (!product) return new Response(JSON.stringify({ error: `পণ্যটি খুঁজে পাওয়া যায়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।` }), { status: 400, headers: { 'content-type': 'application/json' } })
       const price = parseFloat(product.price)
       const quantity = parseInt(it.quantity)
-      if (!Number.isFinite(quantity) || quantity <= 0) return new Response(JSON.stringify({ error: `Invalid quantity for product: ${it.productId}` }), { status: 400, headers: { 'content-type': 'application/json' } })
+      if (!Number.isFinite(quantity) || quantity <= 0) return new Response(JSON.stringify({ error: `পণ্যের পরিমাণ সঠিক নয়` }), { status: 400, headers: { 'content-type': 'application/json' } })
       subtotal += price * quantity
       orderItemsData.push({ 
-        productId: it.productId, 
+        productId: pid, 
         quantity, 
         price, 
         color: it.color || null, 
@@ -120,7 +132,7 @@ export async function POST(req) {
   } catch (err) {
     // log and surface the real error message to help debugging
     console.error('POST /api/orders error:', err)
-    const message = err && err.message ? err.message : 'Failed to create order'
-    return new Response(JSON.stringify({ error: message }), { status: 500, headers: { 'content-type': 'application/json' } })
+    const message = 'অর্ডার তৈরি করতে সমস্যা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।'
+    return new Response(JSON.stringify({ error: message, _debug: process.env.NODE_ENV === 'development' ? err?.message : undefined }), { status: 500, headers: { 'content-type': 'application/json' } })
   }
 }

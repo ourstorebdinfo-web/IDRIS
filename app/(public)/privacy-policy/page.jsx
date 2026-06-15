@@ -1,5 +1,10 @@
 import Link from 'next/link'
 
+export const metadata = {
+    title: 'Privacy Policy | GoCart',
+    description: 'Learn how GoCart collects, uses, and protects your personal data when using our website and services.',
+}
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="bg-white text-slate-900">

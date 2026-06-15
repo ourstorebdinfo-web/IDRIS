@@ -24,6 +24,7 @@ const OrderSummary = ({ totalPrice, items }) => {
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [couponCodeInput, setCouponCodeInput] = useState('');
     const [coupon, setCoupon] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (session) {
@@ -65,41 +66,53 @@ const OrderSummary = ({ totalPrice, items }) => {
     }
 
     const handlePlaceOrder = async () => {
+        // Validate before starting the async operation
         if (!selectedAddress) {
-            throw new Error('Please select or add a delivery address');
+            toast.error('অনুগ্রহ করে একটি ঠিকানা সিলেক্ট করুন বা নতুন ঠিকানা যোগ করুন');
+            return;
         }
 
         if (items.length === 0) {
-            throw new Error('Your cart is empty');
+            toast.error('কার্ট খালি');
+            return;
         }
+
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
         const payload = {
             addressId: selectedAddress.id,
-            items: items.map(it => ({ productId: it.id, quantity: it.quantity })),
+            items: items.map(it => ({ productId: it.productId || it.id, quantity: it.quantity, color: it.color || null, size: it.size || null })),
             paymentMethod,
             coupon: coupon ? coupon : undefined
         };
 
-        const res = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Failed to place order');
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || 'অর্ডার করতে সমস্যা হয়েছে');
+            }
+
+            const order = await res.json();
+            // Clear cart
+            dispatch(clearCart());
+            if (session) {
+                dispatch(syncCartToDB());
+            }
+
+            toast.success('অর্ডার সফলভাবে সম্পন্ন হয়েছে!');
+            router.push(`/order-success/${order.id}`);
+        } catch (err) {
+            toast.error(err.message || 'অর্ডার করতে সমস্যা হয়েছে');
+        } finally {
+            setIsSubmitting(false);
         }
-
-        const order = await res.json();
-        // Clear cart
-        dispatch(clearCart());
-        if (session) {
-            dispatch(syncCartToDB());
-        }
-
-        router.push(`/order-success/${order.id}`);
-        return order;
     }
 
     return (
@@ -173,7 +186,13 @@ const OrderSummary = ({ totalPrice, items }) => {
                 <p>Total:</p>
                 <p className='font-medium text-right'>{currency}{coupon ? (totalPrice - (coupon.discount / 100 * totalPrice)).toFixed(2) : totalPrice.toLocaleString()}</p>
             </div>
-            <button onClick={e => { e.preventDefault(); toast.promise(handlePlaceOrder(), { loading: 'Placing order...', success: 'Order placed successfully!', error: (err) => err?.message || 'Failed to place order' }) }} className='w-full bg-slate-700 text-white py-2.5 rounded hover:bg-slate-900 active:scale-95 transition-all'>Place Order</button>
+            <button
+                onClick={handlePlaceOrder}
+                disabled={isSubmitting}
+                className='w-full bg-slate-700 text-white py-2.5 rounded hover:bg-slate-900 active:scale-95 transition-all disabled:opacity-60'
+            >
+                {isSubmitting ? 'অর্ডার হচ্ছে...' : 'Place Order'}
+            </button>
 
             {showAddressModal && <AddressModal setShowAddressModal={setShowAddressModal} />}
 

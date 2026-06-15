@@ -1,6 +1,11 @@
 import { ShieldCheck, Sparkles, Users, Leaf } from 'lucide-react'
 import Link from 'next/link'
 
+export const metadata = {
+    title: 'About Us | GoCart',
+    description: 'Learn about GoCart, our mission to make shopping smarter, faster, and more joyful, and our commitment to customer satisfaction.',
+}
+
 export default function AboutPage() {
     return (
         <main className="bg-white text-slate-800">

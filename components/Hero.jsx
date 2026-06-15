@@ -35,13 +35,13 @@ const Hero = () => {
     const bottomRightBanner = heroBanner.bottomRightBanner || {}
 
     const mainImg = mainBanner.image || null
-    const mainImgProps = mainImg ? { width: 400, height: 400, unoptimized: true } : {}
+    const mainImgProps = mainImg ? { width: 400, height: 400 } : {}
 
     const topProductImg = topRightBanner.image || null
-    const topProductImgProps = topProductImg ? { width: 140, height: 140, unoptimized: true } : {}
+    const topProductImgProps = topProductImg ? { width: 140, height: 140 } : {}
 
     const bottomProductImg = bottomRightBanner.image || null
-    const bottomProductImgProps = bottomProductImg ? { width: 140, height: 140, unoptimized: true } : {}
+    const bottomProductImgProps = bottomProductImg ? { width: 140, height: 140 } : {}
 
     return (
         <div className='mx-3 sm:mx-6'>
@@ -58,9 +58,9 @@ const Hero = () => {
                             {mainBanner.badgeSideText || 'Free Shipping on Orders Above ৳৫০০!'} 
                             <ChevronRightIcon className='group-hover:ml-2 transition-all' size={16} />
                         </div>
-                        <h2 className='text-2xl sm:text-5xl leading-[1.2] my-2 font-medium bg-gradient-to-r from-slate-600 to-[#A0FF74] bg-clip-text text-transparent max-w-[60%] sm:max-w-md'>
+                        <h1 className='text-2xl sm:text-5xl leading-[1.2] my-2 font-medium bg-gradient-to-r from-slate-600 to-[#A0FF74] bg-clip-text text-transparent max-w-[60%] sm:max-w-md'>
                             {(mainBanner.largeHeadline || "Gadgets you'll love.") + " " + (mainBanner.smallHeadline || "Prices you'll trust.")}
-                        </h2>
+                        </h1>
                         <div className='text-slate-800 text-sm font-medium mt-3 sm:mt-8'>
                             {mainBanner.startsFromToggle && <p className='text-xs sm:text-sm'>Starts from</p>}
                             <p className='text-2xl sm:text-3xl'>
@@ -76,7 +76,7 @@ const Hero = () => {
                             </button>
                         </Link>
                     </div>
-                    {mainImg && <Image className='absolute bottom-0 right-4 sm:right-0 md:right-10 w-[45%] max-w-[180px] sm:w-full sm:max-w-sm pointer-events-none' src={mainImg} alt="" {...mainImgProps} />}
+                    {mainImg && <Image className='absolute bottom-0 right-4 sm:right-0 md:right-10 w-[45%] max-w-[180px] sm:w-full sm:max-w-sm pointer-events-none' src={mainImg} alt={mainBanner.largeHeadline || 'Featured gadgets from Our Store BD'} {...mainImgProps} />}
                 </div>
                 <div className='flex flex-row xl:flex-col gap-3 sm:gap-5 w-full xl:max-w-sm text-sm text-slate-600'>
                 {(() => {
@@ -97,7 +97,7 @@ const Hero = () => {
                                 <ArrowRightIcon className='group-hover:ml-2 transition-all size-3.5 sm:size-[18px]' /> 
                             </p>
                         </div>
-                        {topProductImg && <Image className='w-14 sm:w-35' src={topProductImg} alt="" {...topProductImgProps} />}
+                        {topProductImg && <Image className='w-14 sm:w-35' src={topProductImg} alt={topRightBanner.title || 'Best selling products'} {...topProductImgProps} />}
                     </Tag>
                     )
                 })()}
@@ -119,7 +119,7 @@ const Hero = () => {
                                 <ArrowRightIcon className='group-hover:ml-2 transition-all size-3.5 sm:size-[18px]' /> 
                             </p>
                         </div>
-                        {bottomProductImg && <Image className='w-14 sm:w-35' src={bottomProductImg} alt="" {...bottomProductImgProps} />}
+                        {bottomProductImg && <Image className='w-14 sm:w-35' src={bottomProductImg} alt={bottomRightBanner.title || 'Discounted products'} {...bottomProductImgProps} />}
                     </Tag>
                     )
                 })()}

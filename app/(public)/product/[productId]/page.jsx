@@ -1,75 +1,76 @@
-'use client'
-import ProductDescription from "@/components/ProductDescription";
-import ProductDetails from "@/components/ProductDetails";
-import { useParams } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
+import prisma from '@/lib/prisma'
+import { unstable_cache } from 'next/cache'
+import { notFound } from 'next/navigation'
+import ProductDetails from "@/components/ProductDetails"
+import dynamic from 'next/dynamic'
+import { parseJsonArray } from '@/lib/utils'
 
-export default function Product() {
+const ProductDescription = dynamic(() => import("@/components/ProductDescription"))
 
-    const { productId } = useParams();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const products = useSelector(state => state.product.list);
+export const revalidate = 60
 
-    const fetchProduct = useCallback(async () => {
-        setLoading(true);
-        const productFromStore = products.find((p) => p.id === productId);
-        if (productFromStore) {
-            setProduct(productFromStore);
-            setLoading(false);
-            return;
+const getProduct = unstable_cache(
+    async (id) => {
+        const product = await prisma.product.findUnique({
+            where: { id },
+            include: { ratings: true }
+        })
+        if (!product) return null
+        return {
+            ...product,
+            images: parseJsonArray(product.images),
+            colors: parseJsonArray(product.colors),
+            sizes: parseJsonArray(product.sizes),
         }
-        try {
-            const res = await fetch(`/api/products/${productId}`)
-            if (!res.ok) {
-                setLoading(false);
-                return;
-            }
-            const json = await res.json()
-            setProduct(json)
-        } catch (err) {
-            console.error('Failed to fetch product fallback:', err)
-        } finally {
-            setLoading(false);
-        }
-    }, [productId, products])
+    },
+    ['product-detail'],
+    { revalidate: 60, tags: ['products'] }
+)
 
-    useEffect(() => {
-        fetchProduct()
-    }, [fetchProduct]);
+export async function generateMetadata({ params }) {
+    const { productId } = await params
+    const product = await getProduct(productId)
+    if (!product) return { title: 'Product Not Found' }
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '৳'
+    const images = Array.isArray(product.images) ? product.images : parseJsonArray(product.images)
+    return {
+        title: `${product.name} — ${currency}${product.price}`,
+        description: product.description?.slice(0, 160) || product.name,
+        openGraph: {
+            title: product.name,
+            description: product.description?.slice(0, 160),
+            images: images?.[0] ? [{ url: images[0] }] : [],
+        },
+    }
+}
 
-    // Scroll to top when productId changes — separate from data fetch
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-    }, [productId]);
+export async function generateStaticParams() {
+    try {
+        const products = await prisma.product.findMany({ select: { id: true }, take: 100 })
+        return products.map((p) => ({ productId: p.id }))
+    } catch {
+        return []
+    }
+}
+
+export default async function ProductPage({ params }) {
+    const { productId } = await params
+    const product = await getProduct(productId)
+    if (!product) return notFound()
 
     return (
         <div className="mx-6">
             <div className="max-w-7xl mx-auto">
-
                 {/* Breadcrumbs */}
                 <div className="text-gray-600 text-sm mt-8 mb-5">
-                    Home / Products / {product?.category || 'Products'}
+                    Home / Products / {product.category || 'Products'}
                 </div>
 
                 {/* Product Details */}
-                {loading ? (
-                    <div className="flex items-center justify-center min-h-[40vh]">
-                        <div className="w-10 h-10 border-4 border-slate-200 border-t-slate-600 rounded-full animate-spin" />
-                    </div>
-                ) : product ? (
-                    <>
-                        <ProductDetails key={`details-${product.id}`} product={product} />
-                        {/* Description & Reviews */}
-                        <ProductDescription key={`desc-${product.id}`} product={product} />
-                    </>
-                ) : (
-                    <div className="flex items-center justify-center min-h-[40vh] text-slate-400">
-                        <p className="text-xl">Product not found.</p>
-                    </div>
-                )}
+                <ProductDetails key={`details-${product.id}`} product={product} />
+                {/* Description & Reviews */}
+                <ProductDescription key={`desc-${product.id}`} product={product} />
             </div>
         </div>
-    );
+    )
 }

@@ -12,13 +12,13 @@ export async function POST(req) {
   const sig = req.headers.get('stripe-signature')
   const body = await req.text()
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    console.error('[webhook] STRIPE_WEBHOOK_SECRET is not configured — rejecting request')
+    return new Response(JSON.stringify({ error: 'Webhook not configured' }), { status: 503, headers: { 'content-type': 'application/json' } })
+  }
   let event
   try {
-    if (webhookSecret) {
-      event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
-    } else {
-      event = JSON.parse(body)
-    }
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
   } catch (err) {
     return new Response(`Webhook Error: ${err.message}`, { status: 400 })
   }

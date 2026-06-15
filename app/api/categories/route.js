@@ -7,7 +7,7 @@ export async function GET() {
       orderBy: { name: 'asc' },
       include: { _count: { select: { products: true } } },
     })
-    return new Response(JSON.stringify(categories), { status: 200, headers: { 'content-type': 'application/json' } })
+    return new Response(JSON.stringify(categories), { status: 200, headers: { 'content-type': 'application/json', 'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=60' } })
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Failed to fetch categories' }), { status: 500, headers: { 'content-type': 'application/json' } })
   }

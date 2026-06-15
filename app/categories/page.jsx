@@ -1,7 +1,13 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import prisma from '@/lib/prisma'
 
 export const revalidate = 60
+
+export const metadata = {
+  title: 'Product Categories | GoCart',
+  description: 'Explore products by category and discover collections curated for every need on GoCart.',
+}
 
 export default async function CategoriesPage() {
   const categories = await prisma.category.findMany({
@@ -22,7 +28,9 @@ export default async function CategoriesPage() {
             <Link key={category.id} href={`/category/${category.slug}`} className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm category-card">
               <div className="h-52 overflow-hidden bg-slate-100 force-clip">
                 {category.image ? (
-                  <img src={category.image} alt={category.name} className="h-full w-full object-cover category-card-zoom" />
+                  <div className="relative h-full w-full">
+                    <Image src={category.image} alt={category.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" style={{objectFit:'cover'}} className="category-card-zoom" />
+                  </div>
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">

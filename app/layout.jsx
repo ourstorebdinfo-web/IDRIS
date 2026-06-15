@@ -23,15 +23,34 @@ const getSiteSettings = unstable_cache(
 
 export async function generateMetadata() {
     const settings = await getSiteSettings()
-    const siteName = settings?.siteName || 'GoCart'
+    const siteName = settings?.siteName || 'Our Store BD'
     const title = settings?.seoTitle || `${siteName} - Shop smarter`
     const description = settings?.metaDescription || defaultSettings.description
     const keywords = settings?.metaKeywords ? settings.metaKeywords.split(',').map((keyword) => keyword.trim()).filter(Boolean) : defaultSettings.keywords
+    const siteUrl = 'https://ourstorebd.shop'
+    const ogImage = settings?.logoImage || `${siteUrl}/favicon.ico`
 
     return {
         title,
         description,
         keywords,
+        metadataBase: new URL(siteUrl),
+        alternates: { canonical: '/' },
+        openGraph: {
+            title,
+            description,
+            url: siteUrl,
+            siteName,
+            images: [{ url: ogImage, width: 1200, height: 630, alt: siteName }],
+            locale: 'bn_BD',
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [ogImage],
+        },
         icons: {
             icon: settings?.faviconImage || '/favicon.ico',
         },
